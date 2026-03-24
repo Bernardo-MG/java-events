@@ -1,0 +1,26 @@
+name: Tests
+
+on: [push, pull_request]
+
+jobs:
+  tests:
+    name: Tests with JDK ${{ matrix.jdk }}
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        jdk: [17, 21, 24]
+
+    steps:
+    - name: Check-out
+      uses: actions/checkout@v4
+      with:
+        persist-credentials: false
+    - name: Set up JDK ${{ matrix.jdk }}
+      uses: actions/setup-java@v4
+      with:
+        java-version: ${{ matrix.jdk }}
+        distribution: 'temurin'
+        cache: 'maven'
+    - name: Run up to integration tests
+      run: mvn verify -fae
