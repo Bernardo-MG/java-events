@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site xmlns="http://maven.apache.org/SITE/2.0.0"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://maven.apache.org/SITE/2.0.0 https://maven.apache.org/xsd/site-2.0.0.xsd">
+
+   <skin>
+      <groupId>com.bernardomg.maven.skins</groupId>
+      <artifactId>docs-maven-skin</artifactId>
+      <version>${site.skin.version}</version>
+   </skin>
+
+   <custom>
+      <skinConfig>
+         <keywords>Maven, Java, library</keywords>
+         <descriptionUrl>Check the documentation for Basic pagination model</descriptionUrl>
+         <twitterSite>@bmg</twitterSite>
+         <topNav>
+            <menu>Documentation</menu>
+            <menu>Info and reports</menu>
+         </topNav>
+         <bottomNav>
+            <menu>General Info</menu>
+            <menu>Code</menu>
+            <menu>Releases</menu>
+         </bottomNav>
+         <iconNav>
+            <menu>Icons</menu>
+         </iconNav>
+      </skinConfig>
+   </custom>
+
+   <body>
+      <menu name="General Info" inherit="top">
+         <item name="Acquire" href="./acquire.html" />
+         <item name="Usage" href="./usage.html" />
+         <item name="Changes Log" href="./changes-report.html" />
+         <item name="JavaDocs" href="./apidocs/" />
+      </menu>
+      <menu name="Documentation" inherit="bottom">
+         <item name="Acquire" href="./acquire.html" />
+         <item name="Usage" href="./usage.html" />
+      </menu>
+      <menu name="Info and reports" inherit="bottom">
+         <item name="Info" href="./info.html" />
+         <item name="Reports" href="./reports.html" />
+         <item name="JavaDocs" href="./apidocs/" />
+      </menu>
+      <menu name="Code" inherit="bottom">
+         <item name="GitHub" href="${project.scm.url}"></item>
+         <item name="${project.ciManagement.system}"
+            href="${project.ciManagement.url}"></item>
+         <item name="${project.issueManagement.system}"
+            href="${project.issueManagement.url}"></item>
+      </menu>
+      <menu name="Releases" inherit="bottom">
+         <item name="Maven Central" href="${mavenURL}" />
+         <item name="Github" href="${githubArtifactURL}" />
+      </menu>
+      <menu name="Icons" inherit="bottom">
+         <item name="GitHub" href="${project.scm.url}">
+            <image style="fa-brands fa-github" src="icon" />
+         </item>
+      </menu>
+   </body>
+
+</site>

@@ -1,0 +1,374 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+   <modelVersion>4.0.0</modelVersion>
+
+   <!-- ********************************************** -->
+   <!-- ****************** BASE POM ****************** -->
+   <!-- ********************************************** -->
+
+   <parent>
+      <groupId>com.bernardomg.maven</groupId>
+      <artifactId>base-pom</artifactId>
+      <version>1.5.13</version>
+   </parent>
+
+   <!-- ********************************************** -->
+   <!-- **************** PROJECT INFO **************** -->
+   <!-- ********************************************** -->
+
+   <groupId>com.bernardomg.framework</groupId>
+   <artifactId>event</artifactId>
+   <version>1.0.0</version>
+   <packaging>jar</packaging>
+
+   <name>Basic event handling</name>
+   <description>A simple library to handle events</description>
+   <url>https://github.com/Bernardo-MG/java-event</url>
+   <inceptionYear>2026</inceptionYear>
+
+   <licenses>
+      <license>
+         <name>MIT License</name>
+         <url>https://www.opensource.org/licenses/mit-license.php</url>
+         <distribution>repo</distribution>
+      </license>
+   </licenses>
+
+   <!-- ********************************************** -->
+   <!-- ********* INFRASTRUCTURE AND SERVICES ******** -->
+   <!-- ********************************************** -->
+
+   <scm>
+      <connection>scm:git:https://github.com/Bernardo-MG/java-event.git</connection>
+      <developerConnection>scm:git:https://github.com/Bernardo-MG/java-event.git</developerConnection>
+      <tag>head</tag>
+      <url>https://github.com/Bernardo-MG/java-event</url>
+   </scm>
+
+   <issueManagement>
+      <system>GitHub</system>
+      <url>https://github.com/Bernardo-MG/java-event/issues</url>
+   </issueManagement>
+
+   <ciManagement>
+      <system>Github</system>
+      <url>https://github.com/Bernardo-MG/java-event/actions</url>
+      <notifiers />
+   </ciManagement>
+
+   <!-- ********************************************** -->
+   <!-- ****************** PROFILES ****************** -->
+   <!-- ********************************************** -->
+
+   <profiles>
+      <!-- ============================================== -->
+      <!-- ============ DEPLOYMENT PROFILES ============= -->
+      <!-- ============================================== -->
+      <profile>
+         <!-- Site deployment profile -->
+         <!-- Sets the site repository to point to the releases repo -->
+         <id>deployment-site</id>
+         <activation>
+            <!-- Active by default so the repository appears in the reports -->
+            <activeByDefault>true</activeByDefault>
+         </activation>
+         <distributionManagement>
+            <site>
+               <id>site</id>
+               <name>Project Documentation Site</name>
+               <!-- The URL should be set externally -->
+               <url>${site.url}</url>
+            </site>
+         </distributionManagement>
+      </profile>
+      <profile>
+         <!-- Github deployment profile. -->
+         <id>deployment-github</id>
+         <distributionManagement>
+            <repository>
+               <!-- Github repository -->
+               <id>github</id>
+               <name>GitHub Packages</name>
+               <url>https://maven.pkg.github.com/Bernardo-MG/java-event</url>
+            </repository>
+         </distributionManagement>
+      </profile>
+      <profile>
+         <!-- Central deployment profile. -->
+         <id>deployment-central</id>
+         <build>
+            <plugins>
+               <plugin>
+                  <!-- GPG -->
+                  <groupId>org.apache.maven.plugins</groupId>
+                  <artifactId>maven-gpg-plugin</artifactId>
+                  <executions>
+                     <execution>
+                        <id>sign-artifacts</id>
+                        <phase>verify</phase>
+                        <goals>
+                           <goal>sign</goal>
+                        </goals>
+                     </execution>
+                  </executions>
+                  <configuration>
+                     <!-- Prevent gpg from using pinentry programs -->
+                     <gpgArguments>
+                        <arg>--pinentry-mode</arg>
+                        <arg>loopback</arg>
+                     </gpgArguments>
+                  </configuration>
+               </plugin>
+               <plugin>
+                  <!-- Maven Central publishing -->
+                  <groupId>org.sonatype.central</groupId>
+                  <artifactId>central-publishing-maven-plugin</artifactId>
+                  <extensions>true</extensions>
+                  <configuration>
+                     <publishingServerId>central</publishingServerId>
+                     <autoPublish>true</autoPublish>
+                  </configuration>
+               </plugin>
+            </plugins>
+         </build>
+      </profile>
+   </profiles>
+
+   <!-- ********************************************** -->
+   <!-- *********** ORGANIZATION AND MEMBERS ********* -->
+   <!-- ********************************************** -->
+
+   <organization>
+      <name>Bernardo Martínez Garrido</name>
+      <url>https://github.com/Bernardo-MG</url>
+   </organization>
+
+   <developers>
+      <developer>
+         <id>bmg</id>
+         <name>Bernardo Martínez Garrido</name>
+         <email>programming@bernardomg.com</email>
+         <url>https://github.com/Bernardo-MG</url>
+         <organization>Bernardo Martínez Garrido</organization>
+         <organizationUrl>https://github.com/Bernardo-MG</organizationUrl>
+         <roles>
+            <role>Developer</role>
+         </roles>
+         <timezone>+1</timezone>
+         <properties />
+      </developer>
+   </developers>
+
+   <!-- ********************************************** -->
+   <!-- **************** PROPERTIES ****************** -->
+   <!-- ********************************************** -->
+
+   <properties>
+      <!-- ============================================== -->
+      <!-- ================ JAVA VERSION ================ -->
+      <!-- ============================================== -->
+      <java.version>17</java.version>
+      <!-- ============================================== -->
+      <!-- =============== MANIFEST DATA ================ -->
+      <!-- ============================================== -->
+      <manifest.name>com/bernardomg/event</manifest.name>
+      <!-- ============================================== -->
+      <!-- =========== DEPENDENCIES VERSIONS ============ -->
+      <!-- ============================================== -->
+      <assertj.version>3.27.7</assertj.version>
+      <junit.jupiter.version>6.0.3</junit.jupiter.version>
+      <mockito.version>5.23.0</mockito.version>
+      <log4j.version>2.25.3</log4j.version>
+      <slf4j.version>2.0.17</slf4j.version>
+      <spring.data.version>4.0.4</spring.data.version>
+      <!-- ============================================== -->
+      <!-- ============ PLUGIN CONFIGURATION ============ -->
+      <!-- ============================================== -->
+      <!-- Checkstyle customized rules file -->
+      <checkstyle.config.location>${project.basedir}/src/config/checkstyle/checkstyle-rules.xml</checkstyle.config.location>
+      <!-- Excludes generated code for Checkstyle -->
+      <checkstyle.excludes>**/generated/**/*</checkstyle.excludes>
+      <!-- Exclusion patterns for SpotBugs -->
+      <spotbugs.excludeFilterFile>${project.basedir}/src/config/spotbugs/spotbugs-exclude.xml</spotbugs.excludeFilterFile>
+      <!-- ============================================== -->
+      <!-- ================= MAVEN SITE ================= -->
+      <!-- ============================================== -->
+      <site.skin.version>2.4.1</site.skin.version>
+      <mavenURL>https://mvnrepository.com/artifact/${project.groupId}/${project.artifactId}</mavenURL>
+      <githubArtifactURL><![CDATA[https://github.com/bernardo-mg?tab=packages&amp;repo_name={project.artifactId}]]></githubArtifactURL>
+   </properties>
+
+   <!-- ********************************************** -->
+   <!-- *************** DEPENDENCIES ***************** -->
+   <!-- ********************************************** -->
+
+   <dependencyManagement>
+      <dependencies>
+         <dependency>
+            <!-- JUnit BOM -->
+            <groupId>org.junit</groupId>
+            <artifactId>junit-bom</artifactId>
+            <version>${junit.jupiter.version}</version>
+            <type>pom</type>
+            <scope>import</scope>
+         </dependency>
+      </dependencies>
+   </dependencyManagement>
+
+   <dependencies>
+      <!-- ============================================== -->
+      <!-- ================== LOGGERS =================== -->
+      <!-- ============================================== -->
+      <dependency>
+         <!-- SLF4J API -->
+         <groupId>org.slf4j</groupId>
+         <artifactId>slf4j-api</artifactId>
+         <version>${slf4j.version}</version>
+      </dependency>
+      <dependency>
+         <!-- Log4j SLF4J Bridge -->
+         <groupId>org.apache.logging.log4j</groupId>
+         <artifactId>log4j-slf4j2-impl</artifactId>
+         <version>${log4j.version}</version>
+         <scope>provided</scope>
+      </dependency>
+      <dependency>
+         <!-- Log4j core -->
+         <groupId>org.apache.logging.log4j</groupId>
+         <artifactId>log4j-core</artifactId>
+         <version>${log4j.version}</version>
+         <scope>provided</scope>
+      </dependency>
+      <!-- ============================================== -->
+      <!-- =============== SPRING DATA ================== -->
+      <!-- ============================================== -->
+      <dependency>
+         <!-- Spring data commons -->
+         <groupId>org.springframework.data</groupId>
+         <artifactId>spring-data-commons</artifactId>
+         <version>${spring.data.version}</version>
+         <scope>provided</scope>
+      </dependency>
+      <!-- ============================================== -->
+      <!-- ======= TEST ENVIRONMENT DEPENDENCIES ======== -->
+      <!-- ============================================== -->
+      <dependency>
+         <!-- JUnit Jupiter Engine -->
+         <groupId>org.junit.jupiter</groupId>
+         <artifactId>junit-jupiter-engine</artifactId>
+         <scope>test</scope>
+      </dependency>
+      <dependency>
+         <!-- Mockito -->
+         <groupId>org.mockito</groupId>
+         <artifactId>mockito-core</artifactId>
+         <version>${mockito.version}</version>
+         <scope>test</scope>
+      </dependency>
+      <dependency>
+         <!-- Mockito JUnit Jupiter -->
+         <groupId>org.mockito</groupId>
+         <artifactId>mockito-junit-jupiter</artifactId>
+         <version>${mockito.version}</version>
+         <scope>test</scope>
+      </dependency>
+      <dependency>
+         <!-- AssertJ -->
+         <groupId>org.assertj</groupId>
+         <artifactId>assertj-core</artifactId>
+         <version>${assertj.version}</version>
+         <scope>test</scope>
+      </dependency>
+   </dependencies>
+
+   <!-- ********************************************** -->
+   <!-- ******************* BUILD ******************** -->
+   <!-- ********************************************** -->
+
+   <build>
+      <defaultGoal>clean package install</defaultGoal>
+      <plugins>
+         <plugin>
+            <!-- Changes -->
+            <!-- Takes care of the changes log -->
+            <!-- It is set to also validate the changes log file -->
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-changes-plugin</artifactId>
+            <executions>
+               <!-- Changes plugin is bound to the pre-site phase -->
+               <execution>
+                  <id>check-changes</id>
+                  <phase>pre-site</phase>
+                  <goals>
+                     <goal>changes-check</goal>
+                  </goals>
+               </execution>
+               <execution>
+                  <id>validate-changes</id>
+                  <phase>pre-site</phase>
+                  <goals>
+                     <goal>changes-validate</goal>
+                  </goals>
+                  <configuration>
+                     <failOnError>true</failOnError>
+                  </configuration>
+               </execution>
+            </executions>
+         </plugin>
+         <plugin>
+            <!-- Site -->
+            <!-- Generates the Maven Site -->
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-site-plugin</artifactId>
+            <dependencies>
+               <dependency>
+                  <!-- Docs Maven Skin -->
+                  <groupId>com.bernardomg.maven.skins</groupId>
+                  <artifactId>docs-maven-skin</artifactId>
+                  <version>${site.skin.version}</version>
+               </dependency>
+            </dependencies>
+         </plugin>
+      </plugins>
+   </build>
+
+   <!-- ********************************************** -->
+   <!-- ****************** REPORTS ******************* -->
+   <!-- ********************************************** -->
+
+   <reporting>
+      <plugins>
+         <plugin>
+            <!-- Javadoc -->
+            <!-- Generates the javadocs -->
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <configuration>
+               <sourceFileExcludes>
+                  <!-- Excludes generated code -->
+                  <exclude>**/generated/**/*</exclude>
+               </sourceFileExcludes>
+            </configuration>
+         </plugin>
+         <plugin>
+            <!-- PMD -->
+            <!-- Checks that the code complies with a series of code quality rules -->
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-pmd-plugin</artifactId>
+            <configuration>
+               <rulesets>
+                  <!-- The customized rules file -->
+                  <ruleset>${project.basedir}/src/config/pmd/pmd-rules.xml</ruleset>
+               </rulesets>
+               <excludes>
+                  <!-- Excludes generated code -->
+                  <exclude>**/generated/**/*</exclude>
+               </excludes>
+            </configuration>
+         </plugin>
+      </plugins>
+   </reporting>
+
+</project>
