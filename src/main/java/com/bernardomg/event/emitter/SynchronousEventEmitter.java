@@ -50,6 +50,12 @@ public final class SynchronousEventEmitter implements EventEmitter {
      */
     private final Map<Class<?>, List<EventListener<?>>> listeners;
 
+    /**
+     * Constructs an event emitter with the received listeners.
+     *
+     * @param lsts
+     *            listeners for the emitter
+     */
     public SynchronousEventEmitter(final Collection<EventListener<?>> lsts) {
         super();
 

@@ -45,6 +45,12 @@ public abstract class AbstractEvent implements Serializable {
      */
     private final Instant     timestamp;
 
+    /**
+     * Constructs an event for the received source.
+     *
+     * @param src
+     *            event source
+     */
     public AbstractEvent(final Object src) {
         super();
 
