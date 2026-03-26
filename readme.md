@@ -1,4 +1,4 @@
-# Basic event handlin
+# Basic event handling
 
 A small event library for Java projects.
 
