@@ -38,7 +38,7 @@ public abstract class AbstractEvent implements Serializable {
     /**
      * Event source.
      */
-    private transient Object  source;
+    private transient Serializable  source;
 
     /**
      * Event creation time.
@@ -51,7 +51,7 @@ public abstract class AbstractEvent implements Serializable {
      * @param src
      *            event source
      */
-    public AbstractEvent(final Object src) {
+    public AbstractEvent(final Serializable src) {
         super();
 
         source = src;
@@ -63,7 +63,7 @@ public abstract class AbstractEvent implements Serializable {
      *
      * @return the event source
      */
-    public final Object getSource() {
+    public final Serializable getSource() {
         return source;
     }
 
