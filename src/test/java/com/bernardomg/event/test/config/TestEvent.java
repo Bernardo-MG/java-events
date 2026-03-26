@@ -24,6 +24,8 @@
 
 package com.bernardomg.event.test.config;
 
+import java.io.Serializable;
+
 import com.bernardomg.event.domain.AbstractEvent;
 
 /**
@@ -33,7 +35,7 @@ public final class TestEvent extends AbstractEvent {
 
     private static final long serialVersionUID = 1L;
 
-    public TestEvent(final Object source) {
+    public TestEvent(final Serializable source) {
         super(source);
     }
 
