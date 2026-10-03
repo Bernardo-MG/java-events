@@ -10,5 +10,10 @@
                 First release of the library.
             </action>
         </release>
+        <release version="1.0.1" date="2026-10-04" description="Async">
+            <action dev="bmg" type="add">
+                Async event emitter.
+            </action>
+        </release>
     </body>
 </document>
