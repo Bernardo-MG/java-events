@@ -33,17 +33,17 @@ import java.time.Instant;
  */
 public abstract class AbstractEvent implements Serializable {
 
-    private static final long serialVersionUID = 4530889924666987059L;
+    private static final long      serialVersionUID = 4530889924666987059L;
 
     /**
      * Event source.
      */
-    private transient Serializable  source;
+    private transient Serializable source;
 
     /**
      * Event creation time.
      */
-    private final Instant     timestamp;
+    private final Instant          timestamp;
 
     /**
      * Constructs an event for the received source.
