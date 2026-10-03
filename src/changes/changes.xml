@@ -15,5 +15,10 @@
                 Async event emitter.
             </action>
         </release>
+        <release version="1.0.2" date="2026-10-04" description="Async">
+            <action dev="bmg" type="add">
+                Transactional event emitter.
+            </action>
+        </release>
     </body>
 </document>
