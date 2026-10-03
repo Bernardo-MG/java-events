@@ -240,6 +240,13 @@
          <version>${log4j.version}</version>
          <scope>provided</scope>
       </dependency>
+      <dependency>
+         <!-- Optional Spring integration for TransactionalEventEmitter -->
+         <groupId>org.springframework</groupId>
+         <artifactId>spring-tx</artifactId>
+         <version>6.2.11</version>
+         <optional>true</optional>
+      </dependency>
       <!-- ============================================== -->
       <!-- ======= TEST ENVIRONMENT DEPENDENCIES ======== -->
       <!-- ============================================== -->
