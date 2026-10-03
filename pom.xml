@@ -182,6 +182,7 @@
       <mockito.version>5.23.0</mockito.version>
       <log4j.version>2.25.3</log4j.version>
       <slf4j.version>2.0.17</slf4j.version>
+      <spring.version>6.2.11</spring.version>
       <!-- ============================================== -->
       <!-- ============ PLUGIN CONFIGURATION ============ -->
       <!-- ============================================== -->
@@ -240,12 +241,14 @@
          <version>${log4j.version}</version>
          <scope>provided</scope>
       </dependency>
+      <!-- ============================================== -->
+      <!-- ================== SPRING ==================== -->
+      <!-- ============================================== -->
       <dependency>
-         <!-- Optional Spring integration for TransactionalEventEmitter -->
          <groupId>org.springframework</groupId>
          <artifactId>spring-tx</artifactId>
-         <version>6.2.11</version>
-         <optional>true</optional>
+         <version>${spring.version}</version>
+         <scope>provided</scope>
       </dependency>
       <!-- ============================================== -->
       <!-- ======= TEST ENVIRONMENT DEPENDENCIES ======== -->
