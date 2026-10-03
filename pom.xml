@@ -20,7 +20,7 @@
 
    <groupId>com.bernardomg.framework</groupId>
    <artifactId>event</artifactId>
-   <version>1.0.1</version>
+   <version>1.0.2</version>
    <packaging>jar</packaging>
 
    <name>Basic event handling</name>
@@ -239,6 +239,13 @@
          <artifactId>log4j-core</artifactId>
          <version>${log4j.version}</version>
          <scope>provided</scope>
+      </dependency>
+      <dependency>
+         <!-- Optional Spring integration for TransactionalEventEmitter -->
+         <groupId>org.springframework</groupId>
+         <artifactId>spring-tx</artifactId>
+         <version>6.2.11</version>
+         <optional>true</optional>
       </dependency>
       <!-- ============================================== -->
       <!-- ======= TEST ENVIRONMENT DEPENDENCIES ======== -->
