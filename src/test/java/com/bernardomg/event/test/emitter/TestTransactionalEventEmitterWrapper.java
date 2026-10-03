@@ -1,35 +1,14 @@
-/**
- * The MIT License (MIT)
- * <p>
- * Copyright (c) 2023-2025 the original author or authors.
- * <p>
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- * <p>
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- * <p>
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
 
 package com.bernardomg.event.test.emitter;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -49,7 +28,7 @@ import com.bernardomg.event.emitter.TransactionalEventEmitterWrapper;
 import com.bernardomg.event.test.config.TestEvent;
 
 @ExtendWith(MockitoExtension.class)
-@DisplayName("TransactionalEventEmitterWrapper")
+@DisplayName("TransactionalEventEmitterWrapper - emit")
 class TestTransactionalEventEmitterWrapper {
 
     /**
@@ -82,60 +61,49 @@ class TestTransactionalEventEmitterWrapper {
 
     private TransactionalEventEmitterWrapper emitter;
 
-    private TransactionTemplate       transaction;
+    private TestTransactionManager           manager;
+
+    private TransactionStatus                openStatus;
+
+    private TransactionTemplate              transaction;
 
     @Mock
-    private EventEmitter              wrappedEmitter;
+    private EventEmitter                     wrappedEmitter;
 
-    @BeforeEach
-    void setUp() {
-        emitter = new TransactionalEventEmitterWrapper(wrappedEmitter);
-        transaction = new TransactionTemplate(new TestTransactionManager());
+    @AfterEach
+    void cleanUp() {
+        if ((openStatus != null) && (!openStatus.isCompleted())) {
+            manager.rollback(openStatus);
+        }
+        TransactionSynchronizationManager.clear();
     }
 
     @Test
-    @DisplayName("Null wrapped emitters are rejected")
-    void testConstructor_Null() {
-        final Executable action;
+    @DisplayName("When an event is emitted before the transaction commits, then the wrapped emitter is not called")
+    void testEmit_BeforeCommit() {
+        final TestEvent event;
 
         // GIVEN
-        // No wrapped emitter is supplied.
+        emitter = new TransactionalEventEmitterWrapper(wrappedEmitter);
+        manager = new TestTransactionManager();
+        openStatus = manager.getTransaction(new DefaultTransactionDefinition());
+        event = new TestEvent("abc");
 
         // WHEN
-        action = () -> new TransactionalEventEmitterWrapper(null);
+        emitter.emit(event);
 
         // THEN
-        assertThrows(NullPointerException.class, action);
+        verifyNoInteractions(wrappedEmitter);
     }
 
     @Test
-    @DisplayName("Events are not emitted before commit")
-    void testEmit_BeforeCommit() {
-        final TestEvent              event;
-        final TestTransactionManager manager;
-        final TransactionStatus      status;
-
-        // GIVEN
-        event = new TestEvent("abc");
-        manager = new TestTransactionManager();
-        status = manager.getTransaction(new DefaultTransactionDefinition());
-        try {
-            // WHEN
-            emitter.emit(event);
-
-            // THEN
-            verifyNoInteractions(wrappedEmitter);
-        } finally {
-            manager.rollback(status);
-        }
-    }
-
-    @Test
-    @DisplayName("Committed transactions emit their events")
+    @DisplayName("When an event is emitted in a transaction which is committed, then the wrapped emitter emits the event")
     void testEmit_Commit() {
         final TestEvent event;
 
         // GIVEN
+        emitter = new TransactionalEventEmitterWrapper(wrappedEmitter);
+        transaction = new TransactionTemplate(new TestTransactionManager());
         event = new TestEvent("abc");
 
         // WHEN
@@ -146,13 +114,15 @@ class TestTransactionalEventEmitterWrapper {
     }
 
     @Test
-    @DisplayName("Dispatch failures propagate after commit")
+    @DisplayName("When the wrapped emitter fails after the commit, then the failure is propagated")
     void testEmit_DispatchFailure() {
         final TestEvent        event;
         final RuntimeException failure;
         final Executable       action;
 
         // GIVEN
+        emitter = new TransactionalEventEmitterWrapper(wrappedEmitter);
+        transaction = new TransactionTemplate(new TestTransactionManager());
         event = new TestEvent("abc");
         failure = new IllegalStateException("dispatch failed");
         doThrow(failure).when(wrappedEmitter)
@@ -166,37 +136,36 @@ class TestTransactionalEventEmitterWrapper {
     }
 
     @Test
-    @DisplayName("Transactions rolled back by exceptions do not emit events")
+    @DisplayName("When an exception rolls back the transaction, then the exception is propagated and the wrapped emitter is not called")
     void testEmit_ExceptionRollback() {
         final TestEvent        event;
         final RuntimeException failure;
+        final Executable       action;
 
         // GIVEN
+        emitter = new TransactionalEventEmitterWrapper(wrappedEmitter);
+        transaction = new TransactionTemplate(new TestTransactionManager());
         event = new TestEvent("abc");
         failure = new IllegalStateException("rollback");
 
         // WHEN
-        try {
-            transaction.executeWithoutResult(status -> {
-                emitter.emit(event);
-                throw failure;
-            });
-        } catch (final IllegalStateException exception) {
-            if (exception != failure) {
-                throw exception;
-            }
-        }
+        action = () -> transaction.executeWithoutResult(status -> {
+            emitter.emit(event);
+            throw failure;
+        });
 
         // THEN
-        verifyNoInteractions(wrappedEmitter);
+        assertAll(() -> assertSame(failure, assertThrows(IllegalStateException.class, action)),
+            () -> verifyNoInteractions(wrappedEmitter));
     }
 
     @Test
-    @DisplayName("Without a transaction, emission is immediate")
+    @DisplayName("When an event is emitted without a transaction, then the wrapped emitter emits the event immediately")
     void testEmit_NoTransaction() {
         final TestEvent event;
 
         // GIVEN
+        emitter = new TransactionalEventEmitterWrapper(wrappedEmitter);
         event = new TestEvent("abc");
 
         // WHEN
@@ -207,12 +176,12 @@ class TestTransactionalEventEmitterWrapper {
     }
 
     @Test
-    @DisplayName("Null events are rejected")
+    @DisplayName("When a null event is emitted, then a null pointer exception is thrown")
     void testEmit_Null() {
         final Executable action;
 
         // GIVEN
-        // The emitter is initialized by the fixture.
+        emitter = new TransactionalEventEmitterWrapper(wrappedEmitter);
 
         // WHEN
         action = () -> emitter.emit(null);
@@ -222,11 +191,13 @@ class TestTransactionalEventEmitterWrapper {
     }
 
     @Test
-    @DisplayName("Rolled back transactions do not emit events")
+    @DisplayName("When an event is emitted in a transaction which is rolled back, then the wrapped emitter is not called")
     void testEmit_Rollback() {
         final TestEvent event;
 
         // GIVEN
+        emitter = new TransactionalEventEmitterWrapper(wrappedEmitter);
+        transaction = new TransactionTemplate(new TestTransactionManager());
         event = new TestEvent("abc");
 
         // WHEN
@@ -240,24 +211,21 @@ class TestTransactionalEventEmitterWrapper {
     }
 
     @Test
-    @DisplayName("Active transactions without synchronization fail")
+    @DisplayName("When an event is emitted in an active transaction without synchronization, then an illegal state exception is thrown")
     void testEmit_UnsupportedSynchronization() {
         final TestEvent  event;
         final Executable action;
 
         // GIVEN
+        emitter = new TransactionalEventEmitterWrapper(wrappedEmitter);
         event = new TestEvent("abc");
-
         TransactionSynchronizationManager.setActualTransactionActive(true);
-        try {
-            // WHEN
-            action = () -> emitter.emit(event);
 
-            // THEN
-            assertThrows(IllegalStateException.class, action);
-        } finally {
-            TransactionSynchronizationManager.clear();
-        }
+        // WHEN
+        action = () -> emitter.emit(event);
 
+        // THEN
+        assertThrows(IllegalStateException.class, action);
     }
+
 }

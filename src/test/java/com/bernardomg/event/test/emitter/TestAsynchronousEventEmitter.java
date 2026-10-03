@@ -113,16 +113,16 @@ class TestAsynchronousEventEmitter {
     @Test
     @DisplayName("When a null event is emitted, then a null pointer exception is thrown")
     void testEmit_Null() {
-        final Executable runnable;
+        final Executable action;
 
         // GIVEN
         emitter = getEmitterWithoutListeners();
 
         // WHEN
-        runnable = () -> emitter.emit(null);
+        action = () -> emitter.emit(null);
 
         // THEN
-        assertThrows(NullPointerException.class, runnable);
+        assertThrows(NullPointerException.class, action);
     }
 
     @Test
