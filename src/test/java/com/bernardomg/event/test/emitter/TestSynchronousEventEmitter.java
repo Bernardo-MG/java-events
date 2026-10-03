@@ -24,6 +24,8 @@
 
 package com.bernardomg.event.test.emitter;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
@@ -35,6 +37,7 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.function.Executable;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -44,7 +47,7 @@ import com.bernardomg.event.test.config.AlternativeTestEvent;
 import com.bernardomg.event.test.config.TestEvent;
 
 @ExtendWith(MockitoExtension.class)
-@DisplayName("SynchronousEventEmitter")
+@DisplayName("SynchronousEventEmitter - emit")
 class TestSynchronousEventEmitter {
 
     public TestSynchronousEventEmitter() {
@@ -52,7 +55,7 @@ class TestSynchronousEventEmitter {
     }
 
     @Test
-    @DisplayName("When there are multiple listeners for an event, they all handle the event")
+    @DisplayName("When an event is emitted and there are multiple listeners for it, then all the listeners handle the event")
     @SuppressWarnings("unchecked")
     void testEmit_MultipleRegisteredListener() {
         final SynchronousEventEmitter      emitter;
@@ -78,29 +81,33 @@ class TestSynchronousEventEmitter {
         emitter.emit(event);
 
         // THEN
-        verify(listenerA).handle(event);
-        verify(listenerB).handle(event);
+        assertAll(() -> verify(listenerA).handle(event), () -> verify(listenerB).handle(event));
     }
 
     @Test
-    @DisplayName("When there are no listeners, nothing is done")
+    @DisplayName("When an event is emitted and there are no listeners, then no exception is thrown")
     void testEmit_NoListeners() {
         final SynchronousEventEmitter      emitter;
         final Collection<EventListener<?>> listeners;
+        final TestEvent                    event;
+        final Executable                   action;
 
         // GIVEN
         listeners = List.of();
 
         emitter = new SynchronousEventEmitter(listeners);
 
+        event = new TestEvent("abc");
+
         // WHEN
-        emitter.emit(new TestEvent("abc"));
+        action = () -> emitter.emit(event);
 
         // THEN
+        assertDoesNotThrow(action);
     }
 
     @Test
-    @DisplayName("When there is a listener for an event, it handles the event")
+    @DisplayName("When an event is emitted and there is a listener for it, then the listener handles the event")
     @SuppressWarnings("unchecked")
     void testEmit_RegisteredListener() {
         final SynchronousEventEmitter      emitter;
@@ -125,7 +132,7 @@ class TestSynchronousEventEmitter {
     }
 
     @Test
-    @DisplayName("When there is a listener for another event, it doesn't handle the event")
+    @DisplayName("When an event is emitted and the listener is for another event type, then the listener is not called")
     @SuppressWarnings("unchecked")
     void testEmit_RegisteredListenerForAnother() {
         final SynchronousEventEmitter      emitter;

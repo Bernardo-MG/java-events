@@ -182,7 +182,6 @@
       <mockito.version>5.23.0</mockito.version>
       <log4j.version>2.25.3</log4j.version>
       <slf4j.version>2.0.17</slf4j.version>
-      <spring.data.version>4.0.4</spring.data.version>
       <!-- ============================================== -->
       <!-- ============ PLUGIN CONFIGURATION ============ -->
       <!-- ============================================== -->
@@ -239,16 +238,6 @@
          <groupId>org.apache.logging.log4j</groupId>
          <artifactId>log4j-core</artifactId>
          <version>${log4j.version}</version>
-         <scope>provided</scope>
-      </dependency>
-      <!-- ============================================== -->
-      <!-- =============== SPRING DATA ================== -->
-      <!-- ============================================== -->
-      <dependency>
-         <!-- Spring data commons -->
-         <groupId>org.springframework.data</groupId>
-         <artifactId>spring-data-commons</artifactId>
-         <version>${spring.data.version}</version>
          <scope>provided</scope>
       </dependency>
       <!-- ============================================== -->

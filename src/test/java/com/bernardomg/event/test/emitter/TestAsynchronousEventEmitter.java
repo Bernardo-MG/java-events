@@ -30,7 +30,7 @@ import com.bernardomg.event.test.config.AlternativeTestEvent;
 import com.bernardomg.event.test.config.TestEvent;
 
 @ExtendWith(MockitoExtension.class)
-@DisplayName("AsynchronousEventEmitter")
+@DisplayName("AsynchronousEventEmitter - emit")
 @Timeout(10)
 class TestAsynchronousEventEmitter {
 
@@ -56,7 +56,7 @@ class TestAsynchronousEventEmitter {
     }
 
     @Test
-    @DisplayName("Listener failures reach the error handler")
+    @DisplayName("When a listener fails, then the error handler receives the event and the failure")
     void testEmit_Failure() {
         final TestEvent        event;
         final RuntimeException failure;
@@ -86,7 +86,7 @@ class TestAsynchronousEventEmitter {
     }
 
     @Test
-    @DisplayName("Events without listeners do not fail")
+    @DisplayName("When an event is emitted and there are no listeners, then the error handler is not called")
     void testEmit_NoListeners() {
         final TestEvent event;
 
@@ -111,7 +111,7 @@ class TestAsynchronousEventEmitter {
     }
 
     @Test
-    @DisplayName("Null events are rejected")
+    @DisplayName("When a null event is emitted, then a null pointer exception is thrown")
     void testEmit_Null() {
         final Executable runnable;
 
@@ -126,7 +126,7 @@ class TestAsynchronousEventEmitter {
     }
 
     @Test
-    @DisplayName("Listeners for another event type are not called")
+    @DisplayName("When an event is emitted and the listener is for another event type, then the listener is not called")
     void testEmit_OtherType() {
         final AlternativeTestEvent event;
 
@@ -151,7 +151,7 @@ class TestAsynchronousEventEmitter {
     }
 
     @Test
-    @DisplayName("Queued listeners are not called immediately")
+    @DisplayName("When an event is emitted and the task is only queued, then the listener is not called")
     void testEmit_Queued() {
         final TestEvent event;
 
@@ -167,7 +167,7 @@ class TestAsynchronousEventEmitter {
     }
 
     @Test
-    @DisplayName("Queued tasks dispatch matching listeners")
+    @DisplayName("When a queued task is run, then the matching listener handles the event")
     void testEmit_QueuedDispatch() {
         final AtomicReference<Runnable> task;
         final TestEvent                 event;
@@ -193,7 +193,7 @@ class TestAsynchronousEventEmitter {
     }
 
     @Test
-    @DisplayName("Matching listeners handle the event")
+    @DisplayName("When an event is emitted and there is a matching listener, then the listener handles the event")
     void testEmit_RegisteredListener() {
         final TestEvent event;
 
@@ -218,7 +218,7 @@ class TestAsynchronousEventEmitter {
     }
 
     @Test
-    @DisplayName("Submission rejection reaches the caller")
+    @DisplayName("When the executor rejects the task, then a rejected execution exception is thrown")
     void testEmit_Rejection() {
         final TestEvent                  event;
         final RejectedExecutionException failure;
