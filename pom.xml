@@ -20,7 +20,7 @@
 
    <groupId>com.bernardomg.framework</groupId>
    <artifactId>event</artifactId>
-   <version>1.0.2</version>
+   <version>1.0.3</version>
    <packaging>jar</packaging>
 
    <name>Basic event handling</name>
@@ -178,10 +178,12 @@
       <!-- =========== DEPENDENCIES VERSIONS ============ -->
       <!-- ============================================== -->
       <assertj.version>3.27.7</assertj.version>
+      <commons.lang3.version>3.21.0</commons.lang3.version>
       <junit.jupiter.version>6.0.3</junit.jupiter.version>
       <mockito.version>5.23.0</mockito.version>
       <log4j.version>2.25.3</log4j.version>
       <slf4j.version>2.0.17</slf4j.version>
+      <spring.version>6.2.11</spring.version>
       <!-- ============================================== -->
       <!-- ============ PLUGIN CONFIGURATION ============ -->
       <!-- ============================================== -->
@@ -240,12 +242,22 @@
          <version>${log4j.version}</version>
          <scope>provided</scope>
       </dependency>
+      <!-- ============================================== -->
+      <!-- ================== SPRING ==================== -->
+      <!-- ============================================== -->
       <dependency>
-         <!-- Optional Spring integration for TransactionalEventEmitter -->
          <groupId>org.springframework</groupId>
          <artifactId>spring-tx</artifactId>
-         <version>6.2.11</version>
-         <optional>true</optional>
+         <version>${spring.version}</version>
+         <scope>provided</scope>
+      </dependency>
+      <!-- ============================================== -->
+      <!-- ================== APACHE ==================== -->
+      <!-- ============================================== -->
+      <dependency>
+         <groupId>org.apache.commons</groupId>
+         <artifactId>commons-lang3</artifactId>
+         <version>${commons.lang3.version}</version>
       </dependency>
       <!-- ============================================== -->
       <!-- ======= TEST ENVIRONMENT DEPENDENCIES ======== -->
