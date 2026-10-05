@@ -43,3 +43,17 @@ The project has been released under the [MIT License][license].
 [issues]: https://github.com/bernardo-mg/java-event/issues
 [license]: https://www.opensource.org/licenses/mit-license.php
 [scm]: https://github.com/bernardo-mg/java-event
+
+### Event metadata migration
+
+Events now provide immutable UUID identity, String source, stable type, positive
+payload schema version, and occurrence timestamp. Subclasses call
+`super(source, "fee.paid", 1)` for new events, or
+`super(id, source, type, schemaVersion, timestamp)` when restoring existing events.
+Retries reuse the same event identity and timestamp. Subclass payloads should be
+immutable. Transport adapters handle JSON serialization and bus-specific mapping.
+
+This replaces the Serializable-source constructor and requires downstream
+subclasses to migrate. Null and blank sources/types are rejected. The Java
+serialization UID changes deliberately: serialized events from the old model
+are not compatible with this model. This change does not alter emitter interfaces.

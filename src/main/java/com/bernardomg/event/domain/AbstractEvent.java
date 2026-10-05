@@ -26,54 +26,65 @@ package com.bernardomg.event.domain;
 
 import java.io.Serializable;
 import java.time.Instant;
+import java.util.Objects;
+import java.util.UUID;
+
+import org.apache.commons.lang3.StringUtils;
 
 /**
- * Abstract event, which should be extended to create new events for the
- * {@link com.bernardomg.event.emitter.EventEmitter EventEmitter}.
+ * Immutable metadata shared by domain events. Subclasses define immutable payload fields. Transport adapters serialize
+ * the payload and map this metadata to their envelopes; this class does not depend on any transport or JSON library.
  */
 public abstract class AbstractEvent implements Serializable {
 
-    private static final long      serialVersionUID = 4530889924666987059L;
+    private static final long serialVersionUID = 2L;
 
-    /**
-     * Event source.
-     */
-    private transient Serializable source;
+    private final UUID        id;
 
-    /**
-     * Event creation time.
-     */
-    private final Instant          timestamp;
+    private final int         schemaVersion;
 
-    /**
-     * Constructs an event for the received source.
-     *
-     * @param src
-     *            event source
-     */
-    public AbstractEvent(final Serializable src) {
-        super();
+    private final String      source;
 
-        source = src;
-        timestamp = Instant.now();
+    private final Instant     timestamp;
+
+    private final String      type;
+
+    protected AbstractEvent(final String source, final String type, final int schemaVersion) {
+        this(UUID.randomUUID(), source, type, schemaVersion, Instant.now());
     }
 
-    /**
-     * Returns the event source.
-     *
-     * @return the event source
-     */
-    public final Serializable getSource() {
+    protected AbstractEvent(final UUID id, final String source, final String type, final int schemaVersion,
+            final Instant timestamp) {
+        Objects.requireNonNull(id, "Received null id");
+        Objects.requireNonNull(source, "Received null source");
+        Objects.requireNonNull(type, "Received null type");
+        Objects.requireNonNull(timestamp, "Received null timestamp");
+
+        this.id = id;
+        this.source = StringUtils.trim(source);
+        this.type = StringUtils.trim(type);
+        this.schemaVersion = schemaVersion;
+        this.timestamp = timestamp;
+    }
+
+    public final UUID getId() {
+        return id;
+    }
+
+    public final int getSchemaVersion() {
+        return schemaVersion;
+    }
+
+    public final String getSource() {
         return source;
     }
 
-    /**
-     * Returns the event creation time.
-     *
-     * @return the event creation time
-     */
     public final Instant getTimestamp() {
         return timestamp;
+    }
+
+    public final String getType() {
+        return type;
     }
 
 }
