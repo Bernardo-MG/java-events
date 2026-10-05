@@ -75,40 +75,33 @@ public final class AsynchronousEventEmitter implements EventEmitter {
         this.errorHandler = Objects.requireNonNull(errorHandler);
     }
 
-    /**
-     * Submits an event without waiting. Submission failures, including rejection, propagate to the caller; listener
-     * runtime failures go to the error handler.
-     */
     @Override
     public final <E extends AbstractEvent> void emit(final E event) {
+        Objects.requireNonNull(event);
 
-        log.debug("Emiting event of type {} to listeners", event.getClass());
+        log.debug("Submitting event of type {}", event.getClass());
 
-        executor.execute(() -> {
-            try {
-                dispatch(event);
-            } catch (final RuntimeException exception) {
-                errorHandler.accept(event, exception);
-            }
-        });
-
-        log.debug("Emited event of type {} to listeners", event.getClass());
+        executor.execute(() -> dispatch(event));
     }
 
     @SuppressWarnings("unchecked")
     private final <E extends AbstractEvent> void dispatch(final E event) {
         final Collection<EventListener<?>> found;
 
-        log.debug("Emiting async event of type {} to listeners", event.getClass());
-
         found = listeners.getOrDefault(event.getClass(), List.of());
-
-        log.debug("Found listeners for event of type {}: {}", event.getClass(), found);
 
         found.stream()
             .map(listener -> (EventListener<E>) listener)
-            .forEach(listener -> listener.handle(event));
+            .forEach(listener -> {
+                try {
+                    listener.handle(event);
+                } catch (final RuntimeException exception) {
+                    log.error("Listener {} failed for event of type {}", listener.getClass(), event.getClass(),
+                        exception);
 
-        log.debug("Emited async event of type {} to listeners", event.getClass());
+                    errorHandler.accept(event, exception);
+                }
+            });
     }
+
 }
