@@ -20,5 +20,13 @@
                 Transactional event emitter.
             </action>
         </release>
+        <release version="1.0.3" date="2026-10-06" description="Async fix and extended event">
+            <action dev="bmg" type="add">
+                Extended events to match cloud events.
+            </action>
+            <action dev="bmg" type="fix">
+                If a listener fails, the next ones are still executed.
+            </action>
+        </release>
     </body>
 </document>
